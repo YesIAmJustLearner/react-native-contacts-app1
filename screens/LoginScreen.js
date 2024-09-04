@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 
 const LoginScreen = ({ navigation }) => {
@@ -8,57 +8,78 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.90.69:8000/api/login', { email, password });
+      const response = await axios.post('http://192.168.18.227:8000/api/login', { email, password });
       if (response.data.token) {
-        navigation.navigate('Contacts');
+        navigation.navigate('Contacts', { token: response.data.token });
       }
     } catch (error) {
+      Alert.alert('Erro', 'Não foi possível fazer login. Verifique suas credenciais e tente novamente.');
       console.error(error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text>E-mail:</Text>
+    <ScrollView contentContainerStyle={styles.container}>
       <TextInput
         style={styles.input}
         value={email}
         onChangeText={setEmail}
-        placeholder="Digite seu email"
+        placeholder="Digite seu e-mail"
+        keyboardType="email-address"
+        placeholderTextColor="#888"
       />
-      <Text>Senha:</Text>
       <TextInput
         style={styles.input}
         value={password}
         onChangeText={setPassword}
         placeholder="Digite sua senha"
         secureTextEntry
+        placeholderTextColor="#888"
       />
-      <Button title="Login" onPress={handleLogin} />
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.registerText}>Não tem uma conta? Registre-se aqui.</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#f0f4f8',
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    borderColor: '#ddd',
     borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginBottom: 15,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  button: {
+    backgroundColor: '#007bff',
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   registerText: {
-    marginTop: 16,
-    color: 'blue',
+    color: '#007bff',
     textAlign: 'center',
+    fontSize: 16,
   },
 });
 
